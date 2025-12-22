@@ -1,4 +1,4 @@
-export type UserStatus = "Online" | "Offline";
+import type { UserStatus } from "@/constants/userStatus";
 
 export interface User {
   id: number;
@@ -9,6 +9,8 @@ export interface User {
   company: string;
   status: UserStatus;
 }
+
+export type UserPayload = Omit<User, "id">;
 
 export interface UserStatics {
   totalUsers: number;

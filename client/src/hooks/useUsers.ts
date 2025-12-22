@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
 import { fetchUsers } from "@/services/users.service";
 import { User } from "@/types/user";
 
@@ -12,16 +13,27 @@ export function useUsers() {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(5);
   const [total, setTotal] = useState(0);
-
+  
   const [q, setQ] = useState("");
   const [sortKey, setSortKey] = useState<SortKey | undefined>();
   const [sortDir, setSortDir] = useState<SortDir>("asc");
-
-  const [loading, setLoading] = useState(false);
+  
+  const [loadingGlobal, setLoadingGlobal] = useState(true);
+  const [loadingTable, setLoadingTable] = useState(false);
+  
   const [error, setError] = useState<string | null>(null);
-
+  
+  const isFirstLoad = useRef(true);
+  
   useEffect(() => {
-    setLoading(true);
+    const isTableInteraction = !isFirstLoad.current;
+
+    if (isTableInteraction) {
+      setLoadingTable(true);
+    } else {
+      setLoadingGlobal(true);
+    }
+
     setError(null);
 
     const timeout = setTimeout(() => {
@@ -38,14 +50,16 @@ export function useUsers() {
           if (page === 1 && list.length < perPage) {
             setTotal(list.length);
           } else {
-            setTotal((prev) => Math.max(prev, page * perPage + 1));
+            setTotal((prev) => Math.max(prev, page * perPage));
           }
         })
         .catch(() => {
           setError("Error al cargar usuarios");
         })
         .finally(() => {
-          setLoading(false);
+          setLoadingGlobal(false);
+          setLoadingTable(false);
+          isFirstLoad.current = false;
         });
     }, 300);
 
@@ -64,7 +78,8 @@ export function useUsers() {
     perPage,
     total,
     q,
-    loading,
+    loadingGlobal,
+    loadingTable,
     error,
     sortKey,
     sortDir,

@@ -25,6 +25,16 @@
   /* Scrollbar */
   --scroll-track: #121212;
   --scroll-thumb: #3a3a3a;
+
+  /* Cards / icons */
+  --accent-soft: rgb(123 153 255 / 0.2);
+
+  /* Charts */
+  --chart-organic: #7b99ff;
+  --chart-social: #c9d7fd;
+  --chart-direct: #28e384;
+  --chart-track: rgba(255, 255, 255, 0.18);
+  --chart-fallback: #999999;
 }
 
 /* =====================
@@ -67,4 +77,18 @@ body {
 
 .dark-scroll:hover::-webkit-scrollbar-thumb {
   background-color: var(--scroll-thumb);
+}
+
+select option {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+select option:checked {
+  background-color: var(--accent);
+  color: #fff;
+}
+
+select {
+  color-scheme: dark;
 }

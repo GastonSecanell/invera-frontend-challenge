@@ -1,12 +1,7 @@
-import {
-  UsersIcon,
-  UserPlusIcon,
-  StarIcon,
-  UserIcon,
-} from "@heroicons/react/24/outline";
-
 import UserStatCard from "./UserStatCard";
 import { UserStatics } from "@/types/user";
+import { USER_STATS_ICON_MAP } from "@/constants/userStatsIcons";
+import { humanizeKey } from "@/utils/humanizeKey";
 
 interface Props {
   statics: UserStatics;
@@ -14,30 +9,15 @@ interface Props {
 
 export default function UsersStats({ statics }: Props) {
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <UserStatCard
-        title="Total Users"
-        value={statics.totalUsers}
-        icon={<UsersIcon className="h-5 w-5" />}
-      />
-
-      <UserStatCard
-        title="New Users"
-        value={statics.newUsers}
-        icon={<UserPlusIcon className="h-5 w-5" />}
-      />
-
-      <UserStatCard
-        title="Top Users"
-        value={statics.topUsers}
-        icon={<StarIcon className="h-5 w-5" />}
-      />
-
-      <UserStatCard
-        title="Other Users"
-        value={statics.otherUsers}
-        icon={<UserIcon className="h-5 w-5" />}
-      />
+    <div className="grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-4">
+      {(Object.keys(statics) as (keyof UserStatics)[]).map((key) => (
+        <UserStatCard
+          key={key}
+          title={humanizeKey(key)}
+          value={statics[key]}
+          icon={USER_STATS_ICON_MAP[key]}
+        />
+      ))}
     </div>
   );
 }

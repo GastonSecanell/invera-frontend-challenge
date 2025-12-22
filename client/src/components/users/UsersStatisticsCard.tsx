@@ -2,8 +2,16 @@ import UsersDonutChart from "./UsersDonutChart";
 
 export default function UsersStatisticsCard() {
   return (
-    <div className="mt-6 rounded-xl border border-[#5F5F5F] bg-[#1A1A1A] p-6">
-      <h1 className="text-xl font-bold text-white mb-4">Statistics</h1>
+    <div
+      className="
+        mt-6 rounded-xl p-6
+        bg-[var(--bg-surface)]
+        border border-[var(--border-default)]
+      "
+    >
+      <h3 className="font-bold text-[var(--text-primary)] mb-4">
+        Statistics
+      </h3>
 
       <UsersDonutChart />
     </div>

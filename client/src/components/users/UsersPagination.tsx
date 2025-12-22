@@ -1,4 +1,4 @@
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, ArrowRightIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
 
 interface Props {
   page: number;
@@ -20,72 +20,93 @@ export default function UsersPagination({
   const totalPages = Math.ceil(total / perPage);
 
   return (
-    <div className="mt-4 flex items-center justify-end gap-6 text-sm text-[#BABABA]">
-      {/* Rows per page */}
-      <div className="flex items-center gap-2">
-        <span>Rows per page</span>
-        <select
-          className="
-        bg-[#1A1A1A]
-        border border-[#5F5F5F]
-        rounded-md
-        px-2 py-1
-        text-[#BABABA]
-        focus:outline-none focus:border-[#7B99FF]
-      "
-          value={perPage}
-          onChange={(e) => {
-            onPageChange(1);
-            onPerPageChange(Number(e.target.value));
-          }}
-        >
-          {[5, 10, 20, 50].map((n) => (
-            <option key={n} value={n} className="bg-[#121212]">
-              {n}
-            </option>
-          ))}
-        </select>
+    <div className="mt-4 w-full flex items-center justify-between text-[var(--text-secondary)]">
+      {/* Range LEFT */}
+      <div className="flex items-center gap-2 text-lg">
+        <span>
+          <span className="text-[var(--accent)]">
+            {start}–{end}
+          </span>
+          <span className="text-[var(--text-secondary)]"> of {total}</span>
+        </span>
       </div>
 
-      {/* Range */}
-      <span>
-        <span className="text-[#7B99FF]">
-          {start}–{end}
-        </span>
-        <span className="text-[#BABABA]"> of {total}</span>
-      </span>
+      {/* RIGHT SIDE */}
+      <div className="flex items-center gap-6">
+        {/* Rows per page */}
+        <div className="flex items-center gap-2">
+          <span>Rows per page:</span>
 
-      {/* Arrows */}
-      <div className="flex items-center gap-2">
-        <button
-          disabled={page === 1}
-          onClick={() => onPageChange(page - 1)}
-          className="
-        h-8 w-8 flex items-center justify-center
-        rounded-md
-        border border-[#7B99FF]
-        text-[#7B99FF]
-        hover:bg-[#7B99FF]/10
-        disabled:opacity-40
-      "
-        >
-          <ChevronLeftIcon className="h-4 w-4" />
-        </button>
+          <div className="relative">
+            <select
+              value={perPage}
+              onChange={(e) => {
+                onPageChange(1);
+                onPerPageChange(Number(e.target.value));
+              }}
+              className="
+                h-8 rounded-md pl-2 pr-8
+                bg-[var(--bg-surface)]
+                border border-[var(--border-default)]
+                text-[var(--text-primary)]
+                appearance-none
+                focus:outline-none
+                focus:border-[var(--accent)]
+              "
+            >
+              {[5, 10, 20, 50].map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
 
-        <button
-          disabled={page === totalPages}
-          onClick={() => onPageChange(page + 1)}
-          className="
-        h-8 w-8 flex items-center justify-center
-        rounded-md
-        border border-[#7B99FF]
-        text-[#7B99FF]
-        hover:bg-[#7B99FF]/10
-        disabled:opacity-40
-      "
-        >
-          <ChevronRightIcon className="h-4 w-4" />
-        </button>
+            {/* Flecha custom */}
+            <ChevronDownIcon
+              className="
+                pointer-events-none
+                absolute right-2 top-1/2 -translate-y-1/2
+                h-4 w-4
+                text-[var(--chart-organic)]
+              "
+            />
+          </div>
+        </div>
+
+        {/* Arrows */}
+        <div className="flex items-center gap-2 ml-9">
+          <button
+            disabled={page === 1}
+            onClick={() => onPageChange(page - 1)}
+            className="
+              h-7 w-7 flex items-center justify-center
+              rounded-md
+              border border-[var(--border-default)]
+              text-[var(--chart-organic)]
+              hover:border-[var(--accent)]
+              hover:text-[var(--accent)]
+              transition
+            "
+          >
+            <ArrowLeftIcon className="h-3.5 w-3.5" />
+          </button>
+
+          <button
+            disabled={page === totalPages}
+            onClick={() => onPageChange(page + 1)}
+            className="
+              h-7 w-7 flex items-center justify-center
+              rounded-md
+              border border-[var(--border-default)]
+              text-[var(--chart-organic)]
+              hover:border-[var(--accent)]
+              hover:text-[var(--accent)]
+              transition
+            "
+          >
+            <ArrowRightIcon className="h-3.5 w-3.5" />
+          </button>
+        </div>
       </div>
     </div>
   );
