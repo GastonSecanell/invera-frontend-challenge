@@ -1,5 +1,4 @@
 import Modal from "@/components/ui/Modal";
-import Alert from "@/components/ui/Alert";
 import UserForm from "./UserForm";
 import { User } from "@/types/user";
 
@@ -31,8 +30,6 @@ export default function UserModal({
       title={mode === "create" ? "Add user" : "Edit user"}
       size="lg"
     >
-      {error && <Alert type="error">{error}</Alert>}
-
       {success && (
         <div
           className="
