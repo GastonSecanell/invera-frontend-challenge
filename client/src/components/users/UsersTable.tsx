@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { User } from "@/types/user";
 import StatusBadge from "@/components/ui/StatusBadge";
@@ -16,78 +18,76 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 
-/* Types */
+/* ================= TYPES ================= */
 type SortDir = "asc" | "desc";
-type SortKey = "name" | "location" | "phone" | "company" | "status";
 
 interface Props {
-  users?: User[];
+  users: User[];
   page: number;
   perPage: number;
   total: number;
+
+  sortKey?: keyof User;
+  sortDir?: "asc" | "desc";
+  onSortChange: (key: keyof User) => void;
+
+  search: string;
+  onSearchChange: (value: string) => void;
 }
 
-/* Component */
+/* ================= COMPONENT ================= */
 export default function UsersTable({
-  users = [],
+  users,
   page,
   perPage,
   total,
+  sortKey,
+  sortDir,
+  onSortChange,
+  search,
+  onSearchChange,
 }: Props) {
   const [selected, setSelected] = useState<number[]>([]);
-  const [sort, setSort] = useState<{ key: SortKey; dir: SortDir } | null>(null);
 
   const allSelected = users.length > 0 && selected.length === users.length;
 
-  const toggleAll = (checked: boolean) => {
+  const toggleAll = (checked: boolean) =>
     setSelected(checked ? users.map((u) => u.id) : []);
-  };
 
-  const toggleOne = (id: number, checked: boolean) => {
+  const toggleOne = (id: number, checked: boolean) =>
     setSelected((prev) =>
       checked ? [...prev, id] : prev.filter((x) => x !== id)
     );
-  };
-
-  const toggleSort = (key: SortKey) => {
-    setSort((prev) => {
-      if (!prev || prev.key !== key) return { key, dir: "asc" };
-      return { key, dir: prev.dir === "asc" ? "desc" : "asc" };
-    });
-  };
 
   const start = total === 0 ? 0 : (page - 1) * perPage + 1;
   const end = Math.min(page * perPage, total);
 
-  /* Header cell reusable */
+  /* ================= HEADER CELL ================= */
   const Header = ({
     label,
     icon,
-    sortKey,
+    columnKey,
   }: {
     label: string;
     icon: React.ReactNode;
-    sortKey: SortKey;
+    columnKey: keyof User;
   }) => {
-    const active = sort?.key === sortKey;
-    const dir = sort?.dir;
+    const active = sortKey === columnKey;
 
     return (
       <button
-        onClick={() => toggleSort(sortKey)}
+        type="button"
+        onClick={() => onSortChange(columnKey)}
         className="flex items-center gap-2 group select-none"
       >
         <span
-          className={`
-            h-4 w-4
-            ${active ? "text-[#7B99FF]" : "text-[#BABABA]"}
-          `}
+          className={`h-4 w-4 ${active ? "text-[#7B99FF]" : "text-[#BABABA]"}`}
         >
           {icon}
         </span>
 
         <span
-          className={`font-bold ${
+          className={`font-medium ${
             active ? "text-[#7B99FF]" : "text-[#BABABA]"
           }`}
         >
@@ -97,14 +97,14 @@ export default function UsersTable({
         <span className="flex flex-col">
           <ChevronUpIcon
             className={`h-3 w-3 ${
-              active && dir === "asc"
+              active && sortDir === "asc"
                 ? "text-[#7B99FF]"
                 : "text-[#5F5F5F] group-hover:text-[#BABABA]"
             }`}
           />
           <ChevronDownIcon
             className={`h-3 w-3 -mt-1 ${
-              active && dir === "desc"
+              active && sortDir === "desc"
                 ? "text-[#7B99FF]"
                 : "text-[#5F5F5F] group-hover:text-[#BABABA]"
             }`}
@@ -113,27 +113,6 @@ export default function UsersTable({
       </button>
     );
   };
-
-  const sortUsers = (
-    users: User[],
-    sort: { key: SortKey; dir: "asc" | "desc" } | null
-  ) => {
-    if (!sort) return users;
-
-    const { key, dir } = sort;
-    const factor = dir === "asc" ? 1 : -1;
-
-    return [...users].sort((a, b) => {
-      const aVal = (a[key] ?? "").toString().toLowerCase();
-      const bVal = (b[key] ?? "").toString().toLowerCase();
-
-      if (aVal < bVal) return -1 * factor;
-      if (aVal > bVal) return 1 * factor;
-      return 0;
-    });
-  };
-
-  const sortedUsers = sortUsers(users, sort);
 
   return (
     <div className="mt-6 overflow-hidden rounded-xl border border-[#5F5F5F] bg-[#1A1A1A]">
@@ -145,6 +124,8 @@ export default function UsersTable({
           <div className="relative">
             <input
               type="text"
+              value={search}
+              onChange={(e) => onSearchChange(e.target.value)}
               placeholder="Search for..."
               className="
                 h-9 w-[350px]
@@ -153,119 +134,118 @@ export default function UsersTable({
                 bg-[#1A1A1A]
                 pl-9 pr-3
                 text-sm text-[#BABABA]
-                placeholder-[#6F6F6F]
+                placeholder-[#7A7A7A]
                 focus:outline-none focus:border-[#7B99FF]
               "
             />
+
             <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#BABABA]" />
           </div>
         </div>
 
-        <span className="text-xs">
+        <span className="text-xs text-[#BABABA]">
           <span className="text-[#7B99FF]">
             {start}–{end}
-          </span>
-          <span className="text-[#BABABA]"> of {total}</span>
+          </span>{" "}
+          of {total}
         </span>
       </div>
 
       {/* ================= TABLE ================= */}
-      <table className="w-full text-sm">
-        <thead className="bg-[#1A1A1A] text-xs">
-          <tr className="border-t border-[#5F5F5F]">
-            <th className="px-4 py-3 w-8">
-              <Checkbox checked={allSelected} onChange={toggleAll} />
-            </th>
+      <div className="relative max-h-[520px] overflow-y-auto">
+        <table className="w-full text-sm border-collapse">
+          <thead className="sticky top-0 bg-[#1A1A1A] text-xs">
+            <tr className="border-t border-[#5F5F5F]">
+              <th className="px-4 py-3 w-8">
+                <Checkbox checked={allSelected} onChange={toggleAll} />
+              </th>
 
-            <th className="px-4 py-3">
-              <Header label="Name" icon={<UserIcon />} sortKey="name" />
-            </th>
+              <th className="px-4 py-3">
+                <Header label="Name" icon={<UserIcon />} columnKey="name" />
+              </th>
+              <th className="px-4 py-3">
+                <Header
+                  label="Location"
+                  icon={<MapPinIcon />}
+                  columnKey="location"
+                />
+              </th>
+              <th className="px-4 py-3">
+                <Header label="Phone" icon={<PhoneIcon />} columnKey="phone" />
+              </th>
+              <th className="px-4 py-3">
+                <Header
+                  label="Company"
+                  icon={<BuildingOfficeIcon />}
+                  columnKey="company"
+                />
+              </th>
+              <th className="px-4 py-3">
+                <Header
+                  label="Status"
+                  icon={<CheckCircleIcon />}
+                  columnKey="status"
+                />
+              </th>
 
-            <th className="px-4 py-3">
-              <Header
-                label="Location"
-                icon={<MapPinIcon />}
-                sortKey="location"
-              />
-            </th>
+              <th className="px-4 py-3 w-[96px]" />
+            </tr>
+          </thead>
 
-            <th className="px-4 py-3">
-              <Header label="Phone" icon={<PhoneIcon />} sortKey="phone" />
-            </th>
+          <tbody>
+            {users.map((u) => {
+              const isChecked = selected.includes(u.id);
 
-            <th className="px-4 py-3">
-              <Header
-                label="Company"
-                icon={<BuildingOfficeIcon />}
-                sortKey="company"
-              />
-            </th>
+              return (
+                <tr
+                  key={u.id}
+                  className={`border-t border-[#5F5F5F] hover:bg-[#222] ${
+                    isChecked ? "bg-[#242424]" : ""
+                  }`}
+                >
+                  <td className="px-4 py-3">
+                    <Checkbox
+                      checked={isChecked}
+                      onChange={(c) => toggleOne(u.id, c)}
+                    />
+                  </td>
 
-            <th className="px-4 py-3">
-              <Header
-                label="Status"
-                icon={<CheckCircleIcon />}
-                sortKey="status"
-              />
-            </th>
-
-            <th className="px-4 py-3 text-right" />
-          </tr>
-        </thead>
-
-        <tbody>
-          {sortedUsers.map((u) => {
-            const isChecked = selected.includes(u.id);
-
-            return (
-              <tr
-                key={u.id}
-                className={`border-t border-[#5F5F5F] transition ${
-                  isChecked ? "bg-[#181818]" : "hover:bg-[#1a1a1a]"
-                }`}
-              >
-                <td className="px-4 py-3">
-                  <Checkbox
-                    checked={isChecked}
-                    onChange={(c) => toggleOne(u.id, c)}
-                  />
-                </td>
-
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-full bg-[#1f2937] flex items-center justify-center text-sm font-medium text-white">
-                      {u.name.charAt(0)}
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-full bg-[#1f2937] flex items-center justify-center text-sm font-medium text-white">
+                        {u.name.charAt(0)}
+                      </div>
+                      <div>
+                        <div className="font-medium text-white">{u.name}</div>
+                        <div className="text-xs text-[#BABABA]">{u.email}</div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="font-medium text-white">{u.name}</div>
-                      <div className="text-xs text-gray-400">{u.email}</div>
+                  </td>
+
+                  <td className="px-4 py-3 text-[#BABABA]">{u.location}</td>
+                  <td className="px-4 py-3 text-[#BABABA]">{u.phone}</td>
+                  <td className="px-4 py-3 text-[#BABABA]">{u.company}</td>
+
+                  <td className="px-4 py-3">
+                    <StatusBadge status={u.status} />
+                  </td>
+
+                  <td className="px-4 py-3">
+                    <div className="flex justify-center gap-3">
+                      <button className="text-[#BABABA] hover:text-white">
+                        <PencilSquareIcon className="h-4 w-4" />
+                      </button>
+                      <button className="text-[#BABABA] hover:text-red-500">
+                        <TrashIcon className="h-4 w-4" />
+                      </button>
                     </div>
-                  </div>
-                </td>
-
-                <td className="px-4 py-3 text-gray-300">{u.location}</td>
-                <td className="px-4 py-3 text-gray-300">{u.phone}</td>
-                <td className="px-4 py-3 text-gray-300">{u.company}</td>
-
-                <td className="px-4 py-3">
-                  <StatusBadge status={u.status as "Online" | "Offline"} />
-                </td>
-
-                <td className="px-4 py-3">
-                  <div className="flex justify-center gap-3">
-                    <button className="text-gray-400 hover:text-white">
-                      <PencilSquareIcon className="h-4 w-4" />
-                    </button>
-                    <button className="text-gray-400 hover:text-red-400">
-                      <TrashIcon className="h-4 w-4" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

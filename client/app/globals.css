@@ -1,41 +1,70 @@
 @import "tailwindcss";
 
 :root {
-  --background: #212121;
-  --foreground: #e5e7eb;
+  /* Backgrounds */
+  --bg-page: #212121;
+  --bg-surface: #1a1a1a;
+  --bg-row-odd: #1a1a1a;
+  --bg-row-even: #212121;
+  --bg-hover: #262626;
+  --bg-selected: #262626;
+
+  /* Borders */
+  --border-default: #5f5f5f;
+
+  /* Text */
+  --text-primary: #e5e7eb;
+  --text-secondary: #bababa;
+  --text-muted: #6f6f6f;
+
+  /* Accent */
+  --accent: #7b99ff;
+  --success: #22c55e;
+  --danger: #ef4444;
+
+  /* Scrollbar */
+  --scroll-track: #121212;
+  --scroll-thumb: #3a3a3a;
 }
 
+/* =====================
+   BASE
+===================== */
 html,
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--bg-page);
+  color: var(--text-primary);
 }
 
 body {
-   font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
 
-/* :root {
-  --background: #ffffff;
-  --foreground: #212121;
+/* =====================
+   SCROLLBAR (dark)
+===================== */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scroll-thumb) var(--scroll-track);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+*::-webkit-scrollbar {
+  width: 10px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+*::-webkit-scrollbar-track {
+  background: var(--scroll-track);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-} */
+*::-webkit-scrollbar-thumb {
+  background-color: var(--scroll-thumb);
+  border-radius: 999px;
+}
+
+.dark-scroll::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
+
+.dark-scroll:hover::-webkit-scrollbar-thumb {
+  background-color: var(--scroll-thumb);
+}
