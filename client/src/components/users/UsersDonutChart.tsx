@@ -11,12 +11,12 @@ type Item = {
   color: string;
 };
 
-const TRACK = "rgba(255,255,255,0.08)";
+const TRACK = "var(--chart-track)";
 
 const COLORS: Record<string, string> = {
-  Organic: "#7B99FF",
-  Social: "#C9D7FD",
-  Direct: "#28E384",
+  Organic: "var(--chart-organic)",
+  Social: "var(--chart-social)",
+  Direct: "var(--chart-direct)",
 };
 
 export default function UsersDonutChart() {
@@ -35,28 +35,29 @@ export default function UsersDonutChart() {
   const items: Item[] = data.distribution.map((d) => ({
     name: d.type,
     value: d.percentage,
-    color: COLORS[d.type] ?? "#999999",
+    color: COLORS[d.type] ?? "#5F5F5F",
   }));
 
   const rings = [
-    { inner: 74, outer: 86 },
-    { inner: 62, outer: 72 },
-    { inner: 50, outer: 60 },
+    { inner: 93, outer: 100 },
+    { inner: 81, outer: 88 },
+    { inner: 70, outer: 76 },
   ];
 
   return (
     <div className="w-full flex justify-center">
-      {/* BLOQUE CENTRAL */}
+      {/* ================= CONTAINER ================= */}
       <div
         className="
           flex flex-col items-center gap-8
-          sm:flex-row sm:items-center sm:gap-14
-          max-w-[640px] w-full
+          sm:flex-row sm:items-center sm:justify-between
+          lg:gap-28
+          w-full max-w-full lg:max-w-[960px]
         "
       >
         {/* ================= CHART ================= */}
-        <div className="relative flex-shrink-0">
-          <PieChart width={190} height={190}>
+        <div className="relative flex-shrink-0 sm:ml-2 lg:ml-4">
+          <PieChart width={200} height={200}>
             {items.slice(0, rings.length).map((item, i) => {
               const r = rings[i];
               const ringData = [
@@ -74,7 +75,9 @@ export default function UsersDonutChart() {
                   innerRadius={r.inner}
                   outerRadius={r.outer}
                   stroke="none"
-                  isAnimationActive={false}
+                  isAnimationActive
+                  animationDuration={900}
+                  animationEasing="ease-out"
                 >
                   <Cell fill={item.color} />
                   <Cell fill={TRACK} />
@@ -83,13 +86,13 @@ export default function UsersDonutChart() {
             })}
           </PieChart>
 
-          {/* CENTER */}
+          {/* ================= CENTER ================= */}
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
             <div className="leading-none">
-              <div className="text-4xl font-extrabold text-white">
+              <div className="text-3xl font-semibold text-[var(--text-primary)]">
                 {formatCompactNumber(data.totalUsers)}
               </div>
-              <div className="text-2xl font-extrabold text-white -mt-1">
+              <div className="text-xl font-semibold text-[var(--text-primary)] -mt-1">
                 users
               </div>
             </div>
@@ -97,22 +100,31 @@ export default function UsersDonutChart() {
         </div>
 
         {/* ================= LEGEND ================= */}
-        <div className="w-full sm:w-[260px] space-y-5">
+        <div className="w-full sm:w-[500px] space-y-5">
           {items.map((item) => (
             <div
               key={item.name}
               className="
-                grid grid-cols-[auto_1fr_auto]
-                items-center gap-4
-                text-sm text-white
+                grid grid-cols-[20px_1fr_56px]
+                items-center
+                text-sm
               "
             >
+              {/* DOT */}
               <span
-                className="h-2.5 w-2.5 rounded-full"
+                className="h-2.5 w-2.5 rounded-full justify-self-start"
                 style={{ backgroundColor: item.color }}
               />
-              <span>{item.name}</span>
-              <span className="font-medium">{item.value}%</span>
+
+              {/* NAME (CENTERED) */}
+              <span className="justify-self-start text-[var(--text-primary)]">
+                {item.name}
+              </span>
+
+              {/* VALUE (RIGHT) */}
+              <span className="text-right font-medium text-[var(--text-primary)]">
+                {item.value}%
+              </span>
             </div>
           ))}
         </div>

@@ -21,6 +21,7 @@ import Spinner from "@/components/ui/Spinner";
 import { Button } from "@/components/ui/button";
 
 import { deleteUser } from "@/services/users.service";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 export default function UsersPage() {
   /* =========================
@@ -109,13 +110,17 @@ export default function UsersPage() {
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-bold text-[var(--text-primary)]">Users</h1>
 
-        <Button
-          size="sm"
-          className="px-10 font-bold"
-          onClick={userModal.openCreate}
-        >
-          Add user
-        </Button>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+
+          <Button
+            size="sm"
+            className="px-10 font-bold"
+            onClick={userModal.openCreate}
+          >
+            Add user
+          </Button>
+        </div>
       </div>
 
       {/* ================= STATS ================= */}
@@ -123,9 +128,7 @@ export default function UsersPage() {
       <UsersStatisticsCard />
 
       {/* ================= ERROR ================= */}
-      {error && (
-        <p className="text-sm text-[var(--danger)] mt-2">{error}</p>
-      )}
+      {error && <p className="text-sm text-[var(--danger)] mt-2">{error}</p>}
 
       {/* ================= TABLE ================= */}
       {statics && (

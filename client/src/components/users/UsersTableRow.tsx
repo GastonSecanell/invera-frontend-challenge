@@ -3,10 +3,10 @@
 import { User } from "@/types/user";
 import Checkbox from "@/components/ui/Checkbox";
 import StatusBadge from "@/components/ui/StatusBadge";
-import {
-  PencilIcon,
-  TrashIcon,
-} from "@heroicons/react/24/solid";
+import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { useAppMode } from "@/hooks/useAppMode";
+import { DEMO_COMPANY_LOGOS } from "@/utils/demoCompanyLogos";
+import { DEMO_AVATARS } from "@/utils/demoAvatars";
 
 type Props = {
   user: User;
@@ -30,6 +30,17 @@ export default function UsersTableRow({
   onDelete,
   t,
 }: Props) {
+  const { isDemo, ready } = useAppMode();
+  if (!ready) return null;
+
+  const logo = isDemo
+    ? DEMO_COMPANY_LOGOS[user.company] ?? "/companies/default.svg"
+    : null;
+
+  const avatarSrc = isDemo
+    ? DEMO_AVATARS[user.id % DEMO_AVATARS.length]
+    : "/avatars/default.png";
+
   return (
     <tr
       className={`
@@ -54,9 +65,20 @@ export default function UsersTableRow({
       {/* User */}
       <td className="px-4 py-3">
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-full bg-slate-700 flex items-center justify-center text-sm font-medium text-white">
-            {user.name.charAt(0)}
+          <div className="h-8 w-8 rounded-full flex items-center justify-center overflow-hidden">
+            {isDemo ? (
+              <img
+                src={avatarSrc}
+                alt={user.name}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <span className="bg-slate-700 h-full w-full flex items-center justify-center text-sm font-medium text-white">
+                {user.name.charAt(0)}
+              </span>
+            )}
           </div>
+
           <div>
             <div className="font-medium text-[var(--text-primary)]">
               {user.name}
@@ -68,16 +90,39 @@ export default function UsersTableRow({
         </div>
       </td>
 
-      <td className="px-4 py-3 text-[var(--text-secondary)]">
-        {user.phone}
-      </td>
+      <td className="px-4 py-3 text-[var(--text-secondary)]">{user.phone}</td>
 
       <td className="px-4 py-3 text-[var(--text-secondary)]">
         {user.location}
       </td>
 
       <td className="px-4 py-3 text-[var(--text-secondary)]">
-        {user.company}
+        <div className="flex items-center gap-2">
+          {logo ? (
+            <img
+              src={logo}
+              alt={user.company}
+              className="h-5 w-5 object-contain"
+            />
+          ) : (
+            <div
+              className="
+        h-5 w-5 rounded
+        flex items-center justify-center
+        text-[10px] font-semibold
+        bg-[var(--bg-hover)]
+        text-[var(--text-primary)]
+      "
+              title={user.company}
+            >
+              {user.company.charAt(0)}
+            </div>
+          )}
+
+          <span className="text-sm text-[var(--text-primary)]">
+            {user.company}
+          </span>
+        </div>
       </td>
 
       <td className="px-4 py-3">

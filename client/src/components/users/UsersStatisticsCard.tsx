@@ -9,9 +9,9 @@ export default function UsersStatisticsCard() {
         border border-[var(--border-default)]
       "
     >
-      <h3 className="font-bold text-[var(--text-primary)] mb-4">
+      <h1 className="font-bold text-[var(--text-primary)] mb-4">
         Statistics
-      </h3>
+      </h1>
 
       <UsersDonutChart />
     </div>
