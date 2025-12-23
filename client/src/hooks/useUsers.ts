@@ -1,101 +1,119 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { fetchUsers } from "@/services/users.service";
+import { fetchUsers, fetchUsersTotal } from "@/services/users.service";
 import { User, UserFilters } from "@/types/user";
-
-import type { UserStatus } from "@/constants/userStatus";
 
 type SortDir = "asc" | "desc";
 type SortKey = keyof User;
 
 export function useUsers() {
+  /* ================= STATE ================= */
   const [users, setUsers] = useState<User[]>([]);
 
-  // paginado
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(5);
   const [total, setTotal] = useState(0);
 
-  // búsqueda global
   const [q, setQ] = useState("");
 
-  // filtros específicos
   const [filters, setFilters] = useState<UserFilters>({
     name: "",
+    email: "",
     company: "",
     status: undefined,
   });
 
-  // orden
   const [sortKey, setSortKey] = useState<SortKey | undefined>();
   const [sortDir, setSortDir] = useState<SortDir>("asc");
 
-  // estados UI
   const [loadingGlobal, setLoadingGlobal] = useState(true);
   const [loadingTable, setLoadingTable] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const isFirstLoad = useRef(true);
 
+  /* ================= TOTAL COUNT ================= */
   useEffect(() => {
-    const isTableInteraction = !isFirstLoad.current;
+    const timeout = setTimeout(() => {
+      fetchUsersTotal({
+        q: q || undefined,
+        name_like: filters.name || undefined,
+        company_like: filters.company || undefined,
+        email_like: filters.email || undefined, 
+        status: filters.status || undefined,
+      })
+        .then((count) => setTotal(count))
+        .catch(() => setTotal(0));
+    }, 250);
 
-    if (isTableInteraction) {
-      setLoadingTable(true);
-    } else {
-      setLoadingGlobal(true);
-    }
+    return () => clearTimeout(timeout);
+  }, [q, filters]);
+
+  /* ================= LOAD USERS ================= */
+  const loadUsers = async (mode: "auto" | "manual" = "auto") => {
+    const isTableInteraction =
+      mode === "manual" ? true : !isFirstLoad.current;
+
+    if (isTableInteraction) setLoadingTable(true);
+    else setLoadingGlobal(true);
 
     setError(null);
 
-    const timeout = setTimeout(() => {
-      fetchUsers({
+    try {
+      const list = await fetchUsers({
         page,
         limit: perPage,
         q: q || undefined,
-
         name_like: filters.name || undefined,
+        email_like: filters.email || undefined,
         company_like: filters.company || undefined,
         status: filters.status || undefined,
-
         sort: sortKey,
         order: sortDir,
-      })
-        .then((list) => {
-          setUsers(list);
+      });
 
-          // total fake (json-server style)
-          if (page === 1 && list.length < perPage) {
-            setTotal(list.length);
-          } else {
-            setTotal((prev) => Math.max(prev, page * perPage));
-          }
-        })
-        .catch(() => {
-          setError("Error al cargar usuarios");
-        })
-        .finally(() => {
-          setLoadingGlobal(false);
-          setLoadingTable(false);
-          isFirstLoad.current = false;
-        });
+      setUsers(list);
+    } catch {
+      setError("Error al cargar usuarios");
+    } finally {
+      setLoadingGlobal(false);
+      setLoadingTable(false);
+      isFirstLoad.current = false;
+    }
+  };
+
+  /* ================= AUTO FETCH ================= */
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      loadUsers("auto");
     }, 300);
 
     return () => clearTimeout(timeout);
   }, [page, perPage, q, filters, sortKey, sortDir]);
 
-  // reset page cuando cambian filtros o search
+  /* ================= RESET PAGE ================= */
   useEffect(() => {
     setPage(1);
   }, [q, filters]);
 
+  /* ================= SORT ================= */
   const onSortChange = (key: SortKey) => {
     setPage(1);
     setSortKey(key);
     setSortDir((prev) => (prev === "asc" ? "desc" : "asc"));
   };
 
+  /* ================= RESET FILTERS ================= */
+  const resetFilters = () => {
+    setQ("");
+    setFilters({ name: "", company: "", status: undefined });
+    setSortKey(undefined);
+    setSortDir("asc");
+    setPage(1);
+  };
+
+  /* ================= PUBLIC API ================= */
   return {
     users,
     page,
@@ -108,10 +126,14 @@ export function useUsers() {
     error,
     sortKey,
     sortDir,
+
     setPage,
     setPerPage,
     setQ,
     setFilters,
+
     onSortChange,
+    resetFilters,
+    refetch: () => loadUsers("manual"),
   };
 }

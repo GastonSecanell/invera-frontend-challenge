@@ -1,9 +1,14 @@
 "use client";
 
+import { useState } from "react";
+import { User } from "@/types/user";
+
 import { useUsers } from "@/hooks/useUsers";
 import { useUserStatics } from "@/hooks/useUserStatics";
 import { useUserModal } from "@/hooks/useUserModal";
 import { useConfirm } from "@/hooks/useConfirm";
+import { useToast } from "@/hooks/useToast";
+import { useI18n } from "@/i18n/useI18n";
 
 import UsersTable from "@/components/users/UsersTable";
 import UsersPagination from "@/components/users/UsersPagination";
@@ -13,10 +18,9 @@ import UserModal from "@/components/users/UserModal";
 
 import ConfirmModal from "@/components/ui/ConfirmModal";
 import Spinner from "@/components/ui/Spinner";
+import { Button } from "@/components/ui/button";
 
 import { deleteUser } from "@/services/users.service";
-import { User } from "@/types/user";
-import { useState } from "react";
 
 export default function UsersPage() {
   /* =========================
@@ -37,34 +41,52 @@ export default function UsersPage() {
     setPage,
     setPerPage,
     setQ,
-    onSortChange,
     setFilters,
+    onSortChange,
+    resetFilters,
+    refetch,
   } = useUsers();
 
   const { statics } = useUserStatics();
   const userModal = useUserModal();
   const confirmDelete = useConfirm<User>();
+  const { showToast } = useToast();
+  const t = useI18n("en");
 
+  const totalUsers = statics?.totalUsers ?? 0;
   const [deleting, setDeleting] = useState(false);
 
   /* =========================
    * HANDLERS
    * ========================= */
+
   const handleDeleteConfirm = async () => {
     if (!confirmDelete.payload) return;
 
     try {
       setDeleting(true);
 
-      // fake delay para UX
+      // UX delay
       await new Promise((r) => setTimeout(r, 800));
       await deleteUser(confirmDelete.payload.id);
 
+      showToast(
+        `User "${confirmDelete.payload.name}" deleted successfully`,
+        "success"
+      );
+
       confirmDelete.closeConfirm();
+      refetch();
     } catch {
+      showToast("Failed to delete user", "error");
     } finally {
       setDeleting(false);
     }
+  };
+
+  const handleModalSubmit = async (data: Omit<User, "id">) => {
+    await userModal.submit(data);
+    refetch();
   };
 
   /* =========================
@@ -83,32 +105,29 @@ export default function UsersPage() {
    * ========================= */
   return (
     <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8 py-6">
-      {/* HEADER */}
+      {/* ================= HEADER ================= */}
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-bold text-[var(--text-primary)]">Users</h1>
 
-        <button
+        <Button
+          size="sm"
+          className="px-10 font-bold"
           onClick={userModal.openCreate}
-          className="
-            h-8 px-10 rounded-md
-            bg-[var(--accent)]
-            text-sm font-bold text-white
-            transition
-            hover:bg-[color-mix(in_srgb,var(--accent)_85%,#000)]
-          "
         >
           Add user
-        </button>
+        </Button>
       </div>
 
-      {/* STATS */}
+      {/* ================= STATS ================= */}
       {statics && <UsersStats statics={statics} />}
       <UsersStatisticsCard />
 
-      {/* ERROR */}
-      {error && <p className="text-sm text-[var(--danger)] mt-2">{error}</p>}
+      {/* ================= ERROR ================= */}
+      {error && (
+        <p className="text-sm text-[var(--danger)] mt-2">{error}</p>
+      )}
 
-      {/* TABLE + PAGINATION */}
+      {/* ================= TABLE ================= */}
       {statics && (
         <>
           <UsersTable
@@ -116,7 +135,7 @@ export default function UsersPage() {
             loading={loadingTable}
             page={page}
             perPage={perPage}
-            total={statics.totalUsers}
+            total={totalUsers}
             search={q}
             filters={filters}
             onSearchChange={(v) => {
@@ -129,13 +148,15 @@ export default function UsersPage() {
             onSortChange={onSortChange}
             onEdit={userModal.openEdit}
             onDelete={(u) => confirmDelete.openConfirm(u)}
+            onResetFilters={resetFilters}
+            t={t}
           />
 
           <div className="w-full flex">
             <UsersPagination
               page={page}
               perPage={perPage}
-              total={total}
+              total={totalUsers}
               onPageChange={setPage}
               onPerPageChange={setPerPage}
             />
@@ -143,7 +164,7 @@ export default function UsersPage() {
         </>
       )}
 
-      {/* CREATE / EDIT */}
+      {/* ================= CREATE / EDIT MODAL ================= */}
       <UserModal
         open={userModal.open}
         mode={userModal.mode}
@@ -152,10 +173,10 @@ export default function UsersPage() {
         error={userModal.error}
         success={userModal.success}
         onClose={userModal.close}
-        onSubmit={userModal.submit}
+        onSubmit={handleModalSubmit}
       />
 
-      {/* DELETE CONFIRM */}
+      {/* ================= DELETE CONFIRM ================= */}
       <ConfirmModal
         open={confirmDelete.open}
         title="Delete user"

@@ -14,11 +14,34 @@ export function fetchUsers(params?: FetchUsersParams) {
   if (params?.page) query.set("_page", String(params.page));
   if (params?.limit) query.set("_limit", String(params.limit));
   if (params?.q) query.set("q", params.q);
-  if (params?.sort) query.set("_sort", params.sort);
-  if (params?.order) query.set("_order", params.order);
+
+  if (params?.name_like) query.set("name_like", params.name_like);
+  if (params?.email_like) query.set("email_like", params.email_like);
+  if (params?.company_like) query.set("company_like", params.company_like);
   if (params?.status) query.set("status", params.status);
 
+  if (params?.sort) query.set("_sort", String(params.sort));
+  if (params?.order) query.set("_order", params.order);
+
   return apiFetch<User[]>(`/users?${query.toString()}`);
+}
+
+/** Total “calculado” desde front: trae todos los matches y hace length */
+export async function fetchUsersTotal(
+  params?: Omit<FetchUsersParams, "page" | "limit">
+) {
+  const query = new URLSearchParams();
+
+  if (params?.q) query.set("q", params.q);
+  if (params?.name_like) query.set("name_like", params.name_like);
+  if (params?.email_like) query.set("email_like", params.email_like);
+  if (params?.company_like) query.set("company_like", params.company_like);
+  if (params?.status) query.set("status", params.status);
+
+  // NO ponemos _page ni _limit
+  return apiFetch<User[]>(`/users?${query.toString()}`).then(
+    (list) => list.length
+  );
 }
 
 export function fetchUserById(id: number) {
@@ -55,4 +78,22 @@ export function fetchStatics() {
 
 export function fetchUserTypes() {
   return apiFetch<UserTypesResponse>("/userTypes");
+}
+
+/* ================= FILTER OPTIONS ================= */
+export async function fetchUserFilters(): Promise<{
+  companies: string[];
+  statuses: string[];
+}> {
+  const users = await apiFetch<User[]>("/users");
+
+  const companies = Array.from(
+    new Set(users.map((u) => u.company).filter(Boolean))
+  );
+
+  const statuses = Array.from(
+    new Set(users.map((u) => u.status).filter(Boolean))
+  );
+
+  return { companies, statuses };
 }

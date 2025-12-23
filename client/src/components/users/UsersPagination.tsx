@@ -81,6 +81,7 @@ export default function UsersPagination({
             className="
               h-7 w-7 flex items-center justify-center
               rounded-md
+              bg-[var(--bg-surface)]
               border border-[var(--border-default)]
               text-[var(--chart-organic)]
               hover:border-[var(--accent)]
@@ -97,6 +98,7 @@ export default function UsersPagination({
             className="
               h-7 w-7 flex items-center justify-center
               rounded-md
+              bg-[var(--bg-surface)]
               border border-[var(--border-default)]
               text-[var(--chart-organic)]
               hover:border-[var(--accent)]

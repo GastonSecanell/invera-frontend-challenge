@@ -1,5 +1,4 @@
-import type { UserStatus } from "@/constants/userStatus";
-
+export type UserStatus = "Online" | "Offline";
 export interface User {
   id: number;
   name: string;
@@ -33,17 +32,19 @@ export interface FetchUsersParams {
   page?: number;
   limit?: number;
   q?: string;
-  // filtros
+
   name_like?: string;
+  email_like?: string;
   company_like?: string;
-  status?: UserStatus;
-  // orden
+
   sort?: keyof User;
   order?: "asc" | "desc";
+  status?: UserStatus;
 }
 
 export interface UserFilters {
   name?: string;
+  email?: string;
   company?: string;
   status?: UserStatus;
 }
