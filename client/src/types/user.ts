@@ -33,7 +33,17 @@ export interface FetchUsersParams {
   page?: number;
   limit?: number;
   q?: string;
+  // filtros
+  name_like?: string;
+  company_like?: string;
+  status?: UserStatus;
+  // orden
   sort?: keyof User;
   order?: "asc" | "desc";
+}
+
+export interface UserFilters {
+  name?: string;
+  company?: string;
   status?: UserStatus;
 }

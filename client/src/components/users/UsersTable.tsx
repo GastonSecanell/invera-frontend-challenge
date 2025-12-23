@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { User } from "@/types/user";
+import { User, UserFilters } from "@/types/user";
 import StatusBadge from "@/components/ui/StatusBadge";
+import StatusSelect from "@/components/ui/StatusSelect";
 import Checkbox from "@/components/ui/Checkbox";
 import Spinner from "@/components/ui/Spinner";
 
@@ -26,12 +27,19 @@ interface Props {
   page: number;
   perPage: number;
   total: number;
+
+  search: string;
+  onSearchChange: (value: string) => void;
+
+  filters: UserFilters;
+  onFiltersChange: (filters: UserFilters) => void;
+
   sortKey?: keyof User;
   sortDir?: "asc" | "desc";
   onSortChange: (key: keyof User) => void;
-  search: string;
-  onSearchChange: (value: string) => void;
+
   onEdit: (user: User) => void;
+  onDelete: (user: User) => void;
 }
 
 /* ================= COMPONENT ================= */
@@ -47,10 +55,15 @@ export default function UsersTable({
   search,
   onSearchChange,
   onEdit,
+  onDelete,
+  filters,
+  onFiltersChange,
 }: Props) {
   const [selected, setSelected] = useState<number[]>([]);
 
   const allSelected = users.length > 0 && selected.length === users.length;
+
+  const [showFilters, setShowFilters] = useState(false);
 
   const toggleAll = (checked: boolean) =>
     setSelected(checked ? users.map((u) => u.id) : []);
@@ -138,21 +151,15 @@ export default function UsersTable({
   return (
     <div className="mt-6 rounded-xl overflow-hidden border border-[var(--border-default)] bg-[var(--bg-surface)]">
       {/* ================= TOP BAR ================= */}
-      <div
-        className="
-          flex flex-col gap-3
-          px-4 py-3
-          border-b border-[var(--border-default)]
-          sm:flex-row sm:items-center sm:justify-between
-        "
-      >
-        {/* Título + search */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-          <h1 className="text-xl font-bold text-[var(--text-primary)]">
+      <div className="px-4 py-3 border-b border-[var(--border-default)]">
+        <div className="flex items-center gap-4 flex-wrap">
+          {/* Título */}
+          <h1 className="text-xl font-bold text-[var(--text-primary)] whitespace-nowrap">
             All Users
           </h1>
 
-          <div className="relative w-full sm:w-[320px]">
+          {/* Search */}
+          <div className="relative w-[260px]">
             <input
               type="text"
               value={search}
@@ -175,20 +182,68 @@ export default function UsersTable({
         "
             />
           </div>
-        </div>
 
-        {/* Rango */}
-        <span
-          className="
-            text-lg text-[var(--text-secondary)]
-            sm:text-right
-          "
-        >
-          <span className="text-[var(--accent)]">
-            {start}–{end}
-          </span>{" "}
-          of {total}
-        </span>
+          {/* Toggle filtros */}
+          <button
+            type="button"
+            onClick={() => setShowFilters((v) => !v)}
+            className="
+        h-9 px-3
+        flex items-center
+        rounded-md
+        border border-[var(--border-default)]
+        text-sm
+        text-[var(--text-secondary)]
+        hover:text-[var(--text-primary)]
+        hover:bg-[var(--bg-hover)]
+        transition
+        whitespace-nowrap
+      "
+          >
+            {showFilters ? "−" : "+ More filters"}
+          </button>
+
+          {/* FILTROS (AL COSTADO) */}
+          {showFilters && (
+            <>
+              <input
+                placeholder="Filter by name"
+                value={filters.name}
+                onChange={(e) =>
+                  onFiltersChange({ ...filters, name: e.target.value })
+                }
+                className="h-9 w-[160px] rounded-md px-3 text-sm border border-[var(--border-default)]"
+              />
+
+              <input
+                placeholder="Company"
+                value={filters.company}
+                onChange={(e) =>
+                  onFiltersChange({ ...filters, company: e.target.value })
+                }
+                className="h-9 w-[160px] rounded-md px-3 text-sm border border-[var(--border-default)]"
+              />
+
+              <StatusSelect
+                allowAll
+                value={filters.status}
+                onChange={(status) => onFiltersChange({ ...filters, status })}
+                className="w-[150px]"
+              />
+            </>
+          )}
+
+          {/* Spacer */}
+          <div className="flex-1" />
+
+          {/* Rango */}
+          <span className="text-sm text-[var(--text-secondary)] whitespace-nowrap">
+            <span className="text-[var(--accent)]">
+              {start}–{end}
+            </span>{" "}
+            of {total}
+          </span>
+        </div>
       </div>
 
       {/* ================= TABLE WRAPPER ================= */}
@@ -323,6 +378,7 @@ export default function UsersTable({
                       <IconAction
                         hoverClass="hover:text-[var(--danger)]"
                         label="Delete user"
+                        onClick={() => onDelete(u)}
                       >
                         <TrashIcon className="h-4 w-4" />
                       </IconAction>
