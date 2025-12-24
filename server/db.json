@@ -1,12 +1,12 @@
 {
   "users": [
     {
-      "name": "John Doew",
+      "name": "John Doe",
       "email": "john@example.com",
-      "phone": "(123) 456-7890",
+      "phone": "(123) 456-78902",
       "location": "United States",
-      "company": "Example Inc.",
-      "status": "Online",
+      "company": "Google",
+      "status": "Offline",
       "id": 1
     },
     {
@@ -16,24 +16,6 @@
       "phone": "(319) 098-9899",
       "location": "Australia",
       "company": "Facebook",
-      "status": "Offline"
-    },
-    {
-      "id": 6,
-      "name": "Andy Smith",
-      "email": "andy@reddit.com",
-      "phone": "(424) 458-3268",
-      "location": "United States",
-      "company": "Reddit",
-      "status": "Online"
-    },
-    {
-      "id": 7,
-      "name": "Lilly Woods",
-      "email": "lilly@spotify.com",
-      "phone": "(361) 892-1819",
-      "location": "Australia",
-      "company": "Spotify",
       "status": "Offline"
     },
     {
@@ -449,6 +431,15 @@
       "company": "Otra",
       "status": "Offline",
       "id": 53
+    },
+    {
+      "name": "Gaston Nicolas Secanell",
+      "email": "gastonsecanell@gmail.com",
+      "phone": "127365123",
+      "location": "Argentina",
+      "company": "Note",
+      "status": "Online",
+      "id": 54
     }
   ],
   "statics": {
