@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { User } from "@/types/user";
 import { useUserForm } from "@/hooks/useUserForm";
 import { validateUser } from "@/hooks/useUserValidation";
@@ -16,7 +16,42 @@ interface Props {
   loading?: boolean;
 }
 
-type FormErrors = Partial<Record<keyof Omit<User, "id">, string>>;
+type FormData = Omit<User, "id">;
+type FormErrors = Partial<Record<keyof FormData, string>>;
+interface InputFieldProps {
+  value: string;
+  placeholder: string;
+  error?: string;
+  onChange: (value: string) => void;
+}
+
+function InputField({
+  value,
+  placeholder,
+  error,
+  onChange,
+}: InputFieldProps) {
+  return (
+    <div className="flex flex-col gap-1">
+      <input
+        value={value}
+        placeholder={placeholder}
+        onChange={(e) => onChange(e.target.value)}
+        className={`
+          h-10 rounded-md px-3
+          bg-[var(--bg-surface)]
+          border
+          ${error ? "border-red-500" : "border-[var(--border-default)]"}
+          text-[var(--text-primary)]
+          placeholder-[var(--text-muted)]
+          focus:outline-none
+          focus:border-[var(--accent)]
+        `}
+      />
+      {error && <span className="text-xs text-red-400">{error}</span>}
+    </div>
+  );
+}
 
 export default function UserForm({
   initialData,
@@ -26,25 +61,21 @@ export default function UserForm({
 }: Props) {
   const { form, setForm, isDirty, isCreate } = useUserForm(initialData);
   const [errors, setErrors] = useState<FormErrors>({});
-  const { statuses, loading: loadingStatuses } = useUserFilters();
+  const { statuses } = useUserFilters();
 
-  const handleSubmit = () => {
+  const updateField = useCallback(
+    <K extends keyof FormData>(key: K, value: FormData[K]) => {
+      setForm((prev) => ({ ...prev, [key]: value }));
+    },
+    [setForm]
+  );
+
+  const handleSubmit = useCallback(() => {
     const { valid, errors } = validateUser(form);
     setErrors(errors);
     if (!valid) return;
     onSubmit(form);
-  };
-
-  const inputClass = (error?: string) => `
-    h-10 rounded-md px-3
-    bg-[var(--bg-surface)]
-    border
-    ${error ? "border-red-500" : "border-[var(--border-default)]"}
-    text-[var(--text-primary)]
-    placeholder-[var(--text-muted)]
-    focus:outline-none
-    focus:border-[var(--accent)]
-  `;
+  }, [form, onSubmit]);
 
   return (
     <form
@@ -56,85 +87,57 @@ export default function UserForm({
       }}
     >
       {/* Name */}
-      <div className="flex flex-col gap-1">
-        <input
-          value={form.name}
-          placeholder="Name"
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-          className={inputClass(errors.name)}
-        />
-        {errors.name && (
-          <span className="text-xs text-red-400">{errors.name}</span>
-        )}
-      </div>
+      <InputField
+        value={form.name}
+        placeholder="Name"
+        error={errors.name}
+        onChange={(v) => updateField("name", v)}
+      />
 
       {/* Email */}
-      <div className="flex flex-col gap-1">
-        <input
-          value={form.email}
-          placeholder="Email"
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
-          className={inputClass(errors.email)}
-        />
-        {errors.email && (
-          <span className="text-xs text-red-400">{errors.email}</span>
-        )}
-      </div>
+      <InputField
+        value={form.email}
+        placeholder="Email"
+        error={errors.email}
+        onChange={(v) => updateField("email", v)}
+      />
 
       {/* Phone */}
-      <div className="flex flex-col gap-1">
-        <input
-          value={form.phone}
-          placeholder="Phone"
-          onChange={(e) => setForm({ ...form, phone: e.target.value })}
-          className={inputClass(errors.phone)}
-        />
-        {errors.phone && (
-          <span className="text-xs text-red-400">{errors.phone}</span>
-        )}
-      </div>
+      <InputField
+        value={form.phone}
+        placeholder="Phone"
+        error={errors.phone}
+        onChange={(v) => updateField("phone", v)}
+      />
 
       {/* Location */}
-      <div className="flex flex-col gap-1">
-        <input
-          value={form.location}
-          placeholder="Location"
-          onChange={(e) => setForm({ ...form, location: e.target.value })}
-          className={inputClass(errors.location)}
-        />
-        {errors.location && (
-          <span className="text-xs text-red-400">{errors.location}</span>
-        )}
-      </div>
+      <InputField
+        value={form.location}
+        placeholder="Location"
+        error={errors.location}
+        onChange={(v) => updateField("location", v)}
+      />
 
       {/* Company */}
-      <div className="flex flex-col gap-1">
-        <input
-          value={form.company}
-          placeholder="Company"
-          onChange={(e) => setForm({ ...form, company: e.target.value })}
-          className={inputClass(errors.company)}
-        />
-        {errors.company && (
-          <span className="text-xs text-red-400">{errors.company}</span>
-        )}
-      </div>
+      <InputField
+        value={form.company}
+        placeholder="Company"
+        error={errors.company}
+        onChange={(v) => updateField("company", v)}
+      />
 
       {/* Status */}
       <div className="flex flex-col gap-1">
         <SelectBase
           value={form.status}
           onChange={(e) =>
-            setForm({
-              ...form,
-              status: e.target.value as UserStatus,
-            })
+            updateField("status", e.target.value as UserStatus)
           }
           error={!!errors.status}
         >
-          {statuses.map((s) => (
-            <option key={s} value={s}>
-              {s}
+          {statuses.map((status) => (
+            <option key={status} value={status}>
+              {status}
             </option>
           ))}
         </SelectBase>

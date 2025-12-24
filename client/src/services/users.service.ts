@@ -38,7 +38,6 @@ export async function fetchUsersTotal(
   if (params?.company_like) query.set("company_like", params.company_like);
   if (params?.status) query.set("status", params.status);
 
-  // NO ponemos _page ni _limit
   return apiFetch<User[]>(`/users?${query.toString()}`).then(
     (list) => list.length
   );
@@ -81,6 +80,7 @@ export function fetchUserTypes() {
 }
 
 /* ================= FILTER OPTIONS ================= */
+
 export async function fetchUserFilters(): Promise<{
   companies: string[];
   statuses: string[];

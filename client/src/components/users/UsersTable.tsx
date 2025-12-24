@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import type { ReactNode } from "react";
 import { User, UserFilters } from "@/types/user";
 import Checkbox from "@/components/ui/Checkbox";
 import Spinner from "@/components/ui/Spinner";
@@ -15,12 +16,13 @@ import {
   PhoneIcon as PhoneSolid,
   MapPinIcon as MapPinSolid,
   CheckCircleIcon as CheckCircleSolid,
-  BriefcaseIcon as BackspaceSolid,
+  BriefcaseIcon as BriefcaseSolid,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/solid";
 
-/* ================= TYPES ================= */
 type Translations = typeof messages.en;
+
+type UserColumnKey = Exclude<keyof User, "id">;
 
 interface Props {
   users: User[];
@@ -46,7 +48,6 @@ interface Props {
   t: Translations;
 }
 
-/* ================= COMPONENT ================= */
 export default function UsersTable({
   t,
   users,
@@ -65,11 +66,9 @@ export default function UsersTable({
   onEdit,
   onDelete,
 }: Props) {
-  /* ================= STATE ================= */
   const [selected, setSelected] = useState<number[]>([]);
   const [showFilters, setShowFilters] = useState(false);
 
-  /* ================= SELECTION ================= */
   const allSelected = users.length > 0 && selected.length === users.length;
 
   const toggleAll = (checked: boolean) =>
@@ -80,7 +79,6 @@ export default function UsersTable({
       checked ? [...prev, id] : prev.filter((x) => x !== id)
     );
 
-  /* ================= FILTER STATE ================= */
   const hasActiveFilters =
     Boolean(search) ||
     Boolean(filters.name) ||
@@ -88,19 +86,17 @@ export default function UsersTable({
     Boolean(filters.company) ||
     Boolean(filters.status);
 
-  /* ================= PAGINATION INFO ================= */
   const effectiveTotal = total > 0 ? total : users.length;
   const start = users.length === 0 ? 0 : (page - 1) * perPage + 1;
   const end = Math.min(start + users.length - 1, effectiveTotal);
 
-  /* ================= TABLE COLUMNS ================= */
-  const columns = [
-    { key: "name", label: "Name", icon: <UserSolid /> },
-    { key: "phone", label: "Phone", icon: <PhoneSolid /> },
-    { key: "location", label: "Location", icon: <MapPinSolid /> },
-    { key: "company", label: "Company", icon: <BackspaceSolid /> },
-    { key: "status", label: "Status", icon: <CheckCircleSolid /> },
-  ] as const;
+  const columns: { key: UserColumnKey; icon: ReactNode }[] = [
+    { key: "name", icon: <UserSolid /> },
+    { key: "phone", icon: <PhoneSolid /> },
+    { key: "location", icon: <MapPinSolid /> },
+    { key: "company", icon: <BriefcaseSolid /> },
+    { key: "status", icon: <CheckCircleSolid /> },
+  ];
 
   return (
     <div className="mt-6 rounded-xl overflow-hidden border border-[var(--border-default)] bg-[var(--bg-surface)]">
@@ -118,9 +114,17 @@ export default function UsersTable({
         end={end}
         total={total}
         t={{
+          usersTitle: t.usersTitle,
           moreFilters: t.moreFilters,
           closeFilters: t.closeFilters,
           clearFilters: t.clearFilters,
+
+          searchPlaceholder: t.searchPlaceholder,
+          filterByName: t.filterByName,
+          filterByEmail: t.filterByEmail,
+          allCompanies: t.allCompanies,
+          allStatuses: t.allStatuses,
+          rangeOf: t.rangeOf,
         }}
       />
 
@@ -129,7 +133,10 @@ export default function UsersTable({
         <table className="min-w-[900px] w-full text-sm border-collapse">
           {/* ===== HEADER ===== */}
           <UsersTableHeader
-            columns={[...columns]}
+            columns={columns.map((col) => ({
+              ...col,
+              label: t.table[col.key],
+            }))}
             sortKey={sortKey}
             sortDir={sortDir}
             onSortChange={onSortChange}

@@ -1,6 +1,12 @@
+"use client";
+
 import UsersDonutChart from "./UsersDonutChart";
 
-export default function UsersStatisticsCard() {
+interface Props {
+  title: string;
+}
+
+export default function UsersStatisticsCard({ title }: Props) {
   return (
     <div
       className="
@@ -9,9 +15,9 @@ export default function UsersStatisticsCard() {
         border border-[var(--border-default)]
       "
     >
-      <h1 className="font-bold text-[var(--text-primary)] mb-4">
-        Statistics
-      </h1>
+      <h2 className="mb-4 font-bold text-[var(--text-primary)]">
+        {title}
+      </h2>
 
       <UsersDonutChart />
     </div>

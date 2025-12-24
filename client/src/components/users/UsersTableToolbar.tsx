@@ -23,9 +23,17 @@ type Props = {
   total: number;
 
   t: {
+    usersTitle: string;
     moreFilters: string;
     closeFilters: string;
     clearFilters: string;
+
+    searchPlaceholder: string;
+    filterByName: string;
+    filterByEmail: string;
+    allCompanies: string;
+    allStatuses: string;
+    rangeOf: string;
   };
 };
 
@@ -60,7 +68,7 @@ export default function UsersTableToolbar({
       >
         {/* TITLE */}
         <h1 className="text-xl font-bold text-[var(--text-primary)] whitespace-nowrap">
-          All Users
+          {t.usersTitle}
         </h1>
 
         {/* SEARCH */}
@@ -68,7 +76,7 @@ export default function UsersTableToolbar({
           <input
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search for..."
+            placeholder={t.searchPlaceholder}
             className={`${inputBase} pl-9`}
           />
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-secondary)]" />
@@ -93,15 +101,11 @@ export default function UsersTableToolbar({
           className={`
             flex items-center gap-4 overflow-hidden
             transition-[max-height,opacity] duration-300
-            ${
-              showFilters
-                ? "max-h-20 opacity-100"
-                : "max-h-0 opacity-0"
-            }
+            ${showFilters ? "max-h-20 opacity-100" : "max-h-0 opacity-0"}
           `}
         >
           <input
-            placeholder="Filter by name"
+            placeholder={t.filterByName}
             value={filters.name}
             onChange={(e) =>
               onFiltersChange({ ...filters, name: e.target.value })
@@ -110,7 +114,7 @@ export default function UsersTableToolbar({
           />
 
           <input
-            placeholder="Filter by email"
+            placeholder={t.filterByEmail}
             value={filters.email ?? ""}
             onChange={(e) =>
               onFiltersChange({ ...filters, email: e.target.value })
@@ -125,7 +129,7 @@ export default function UsersTableToolbar({
             }
             className="w-[200px]"
           >
-            <option value="">All companies</option>
+            <option value="">{t.allCompanies}</option>
             {companies.map((c) => (
               <option key={c} value={c}>
                 {c}
@@ -145,7 +149,7 @@ export default function UsersTableToolbar({
             }
             className="w-[150px]"
           >
-            <option value="">All statuses</option>
+            <option value="">{t.allStatuses}</option>
             {statuses.map((s) => (
               <option key={s} value={s}>
                 {s}
@@ -177,7 +181,7 @@ export default function UsersTableToolbar({
           <span className="text-[var(--accent)]">
             {start}–{end}
           </span>{" "}
-          of {total}
+          {t.rangeOf} {total}
         </span>
       </div>
 

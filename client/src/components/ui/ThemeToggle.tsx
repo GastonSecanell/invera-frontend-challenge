@@ -3,7 +3,11 @@
 import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
 import { useTheme } from "@/hooks/useTheme";
 
-export function ThemeToggle() {
+interface Props {
+  title: string;
+}
+
+export function ThemeToggle({ title }: Props) {
   const { theme, toggleTheme } = useTheme();
 
   return (
@@ -17,7 +21,8 @@ export function ThemeToggle() {
         hover:bg-[var(--bg-hover)]
         transition
       "
-      title="Toggle theme"
+      title={title}
+      aria-label={title}
     >
       {theme === "dark" ? (
         <SunIcon className="h-4 w-4 text-[var(--text-primary)]" />

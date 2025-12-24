@@ -1,4 +1,8 @@
-import { ArrowLeftIcon, ArrowRightIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  ChevronDownIcon,
+} from "@heroicons/react/24/solid";
 
 interface Props {
   page: number;
@@ -6,6 +10,11 @@ interface Props {
   total: number;
   onPageChange: (page: number) => void;
   onPerPageChange: (value: number) => void;
+
+  t: {
+    rowsPerPage: string;
+    of: string;
+  };
 }
 
 export default function UsersPagination({
@@ -14,6 +23,7 @@ export default function UsersPagination({
   total,
   onPageChange,
   onPerPageChange,
+  t,
 }: Props) {
   const start = (page - 1) * perPage + 1;
   const end = Math.min(page * perPage, total);
@@ -21,21 +31,21 @@ export default function UsersPagination({
 
   return (
     <div className="mt-4 w-full flex items-center justify-between text-[var(--text-secondary)]">
-      {/* Range LEFT */}
+
       <div className="flex items-center gap-2 text-lg">
         <span>
           <span className="text-[var(--accent)]">
             {start}–{end}
-          </span>
-          <span className="text-[var(--text-secondary)]"> of {total}</span>
+          </span>{" "}
+          {t.of} {total}
         </span>
       </div>
 
-      {/* RIGHT SIDE */}
+
       <div className="flex items-center gap-6">
         {/* Rows per page */}
         <div className="flex items-center gap-2">
-          <span>Rows per page:</span>
+          <span>{t.rowsPerPage}</span>
 
           <div className="relative">
             <select
@@ -61,7 +71,6 @@ export default function UsersPagination({
               ))}
             </select>
 
-            {/* Flecha custom */}
             <ChevronDownIcon
               className="
                 pointer-events-none
@@ -78,16 +87,7 @@ export default function UsersPagination({
           <button
             disabled={page === 1}
             onClick={() => onPageChange(page - 1)}
-            className="
-              h-7 w-7 flex items-center justify-center
-              rounded-md
-              bg-[var(--bg-surface)]
-              border border-[var(--border-default)]
-              text-[var(--chart-organic)]
-              hover:border-[var(--accent)]
-              hover:text-[var(--accent)]
-              transition
-            "
+            className="h-7 w-7 flex items-center justify-center rounded-md bg-[var(--bg-surface)] border border-[var(--border-default)] text-[var(--chart-organic)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition"
           >
             <ArrowLeftIcon className="h-3.5 w-3.5" />
           </button>
@@ -95,16 +95,7 @@ export default function UsersPagination({
           <button
             disabled={page === totalPages}
             onClick={() => onPageChange(page + 1)}
-            className="
-              h-7 w-7 flex items-center justify-center
-              rounded-md
-              bg-[var(--bg-surface)]
-              border border-[var(--border-default)]
-              text-[var(--chart-organic)]
-              hover:border-[var(--accent)]
-              hover:text-[var(--accent)]
-              transition
-            "
+            className="h-7 w-7 flex items-center justify-center rounded-md bg-[var(--bg-surface)] border border-[var(--border-default)] text-[var(--chart-organic)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition"
           >
             <ArrowRightIcon className="h-3.5 w-3.5" />
           </button>

@@ -1,8 +1,8 @@
 export const DEMO_AVATARS = [
-  "/avatars/u1.png",
-  "/avatars/u2.png",
-  "/avatars/u3.png",
-  "/avatars/u4.png",
-  "/avatars/u5.png",
-  "/avatars/u6.png",
+  "/img/avatars/u1.png",
+  "/img/avatars/u2.png",
+  "/img/avatars/u3.png",
+  "/img/avatars/u4.png",
+  "/img/avatars/u5.png",
+  "/img/avatars/u6.png",
 ];

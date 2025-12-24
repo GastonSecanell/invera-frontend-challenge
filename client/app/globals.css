@@ -49,7 +49,7 @@
    LIGHT
 ===================== */
 :root[data-theme="light"] {
-  --bg-page: #f5f6f8;
+  --bg-page: #eaeaeb;
   --bg-surface: #ffffff;
   --bg-row-odd: #ffffff;
   --bg-row-even: #f9fafb;

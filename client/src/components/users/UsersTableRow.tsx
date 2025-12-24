@@ -4,9 +4,8 @@ import { User } from "@/types/user";
 import Checkbox from "@/components/ui/Checkbox";
 import StatusBadge from "@/components/ui/StatusBadge";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
-import { useAppMode } from "@/hooks/useAppMode";
-import { DEMO_COMPANY_LOGOS } from "@/utils/demoCompanyLogos";
-import { DEMO_AVATARS } from "@/utils/demoAvatars";
+import UserAvatar from "@/components/ui/UserAvatar";
+import CompanyAvatar from "@/components/ui/CompanyAvatar";
 
 type Props = {
   user: User;
@@ -30,17 +29,6 @@ export default function UsersTableRow({
   onDelete,
   t,
 }: Props) {
-  const { isDemo, ready } = useAppMode();
-  if (!ready) return null;
-
-  const logo = isDemo
-    ? DEMO_COMPANY_LOGOS[user.company] ?? "/companies/default.svg"
-    : null;
-
-  const avatarSrc = isDemo
-    ? DEMO_AVATARS[user.id % DEMO_AVATARS.length]
-    : "/avatars/default.png";
-
   return (
     <tr
       className={`
@@ -66,19 +54,8 @@ export default function UsersTableRow({
       <td className="px-4 py-3">
         <div className="flex items-center gap-3">
           <div className="h-8 w-8 rounded-full flex items-center justify-center overflow-hidden">
-            {isDemo ? (
-              <img
-                src={avatarSrc}
-                alt={user.name}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <span className="bg-slate-700 h-full w-full flex items-center justify-center text-sm font-medium text-white">
-                {user.name.charAt(0)}
-              </span>
-            )}
+            <UserAvatar name={user.name} userId={user.id} />
           </div>
-
           <div>
             <div className="font-medium text-[var(--text-primary)]">
               {user.name}
@@ -98,27 +75,7 @@ export default function UsersTableRow({
 
       <td className="px-4 py-3 text-[var(--text-secondary)]">
         <div className="flex items-center gap-2">
-          {logo ? (
-            <img
-              src={logo}
-              alt={user.company}
-              className="h-5 w-5 object-contain"
-            />
-          ) : (
-            <div
-              className="
-        h-5 w-5 rounded
-        flex items-center justify-center
-        text-[10px] font-semibold
-        bg-[var(--bg-hover)]
-        text-[var(--text-primary)]
-      "
-              title={user.company}
-            >
-              {user.company.charAt(0)}
-            </div>
-          )}
-
+          <CompanyAvatar company={user.company} />
           <span className="text-sm text-[var(--text-primary)]">
             {user.company}
           </span>
@@ -136,7 +93,7 @@ export default function UsersTableRow({
             title={t.editUser}
             aria-label={t.editUser}
             onClick={() => onEdit(user)}
-            className="text-[#8A8A8A] hover:text-[var(--accent)] transition-colors"
+            className="text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors"
           >
             <PencilIcon className="h-4 w-4" />
           </button>
@@ -145,7 +102,7 @@ export default function UsersTableRow({
             title={t.deleteUser}
             aria-label={t.deleteUser}
             onClick={() => onDelete(user)}
-            className="text-[#8A8A8A] hover:text-[var(--danger)] transition-colors"
+            className="text-[var(--text-secondary)] hover:text-[var(--danger)] transition-colors"
           >
             <TrashIcon className="h-4 w-4" />
           </button>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import type { Lang } from "@/i18n/useI18n";
 import { User } from "@/types/user";
 
 import { useUsers } from "@/hooks/useUsers";
@@ -9,24 +10,27 @@ import { useUserModal } from "@/hooks/useUserModal";
 import { useConfirm } from "@/hooks/useConfirm";
 import { useToast } from "@/hooks/useToast";
 import { useI18n } from "@/i18n/useI18n";
+import { useAppMode } from "@/hooks/useAppMode";
 
 import UsersTable from "@/components/users/UsersTable";
 import UsersPagination from "@/components/users/UsersPagination";
 import UsersStats from "@/components/users/UsersStats";
 import UsersStatisticsCard from "@/components/users/UsersStatisticsCard";
 import UserModal from "@/components/users/UserModal";
-
 import ConfirmModal from "@/components/ui/ConfirmModal";
 import Spinner from "@/components/ui/Spinner";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { LanguageToggle } from "@/components/ui/LanguageToggle";
 
 import { deleteUser } from "@/services/users.service";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
-export default function UsersPage() {
-  /* =========================
-   * HOOKS
-   * ========================= */
+export default function UsersPageContent() {
+  const { isDemo } = useAppMode();
+
+  const [lang, setLang] = useState<Lang>("es");
+  const t = useI18n(lang);
+
   const {
     users,
     page,
@@ -52,22 +56,15 @@ export default function UsersPage() {
   const userModal = useUserModal();
   const confirmDelete = useConfirm<User>();
   const { showToast } = useToast();
-  const t = useI18n("en");
 
   const totalUsers = statics?.totalUsers ?? 0;
   const [deleting, setDeleting] = useState(false);
-
-  /* =========================
-   * HANDLERS
-   * ========================= */
 
   const handleDeleteConfirm = async () => {
     if (!confirmDelete.payload) return;
 
     try {
       setDeleting(true);
-
-      // UX delay
       await new Promise((r) => setTimeout(r, 800));
       await deleteUser(confirmDelete.payload.id);
 
@@ -90,9 +87,6 @@ export default function UsersPage() {
     refetch();
   };
 
-  /* =========================
-   * LOADING GLOBAL
-   * ========================= */
   if (loadingGlobal) {
     return (
       <div className="flex items-center justify-center h-[70vh]">
@@ -100,32 +94,36 @@ export default function UsersPage() {
       </div>
     );
   }
-
-  /* =========================
-   * RENDER
-   * ========================= */
   return (
     <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8 py-6">
       {/* ================= HEADER ================= */}
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-xl font-bold text-[var(--text-primary)]">Users</h1>
+        <h1
+          className="text-xl font-bold text-[var(--text-primary)]"
+          title={t.usersTitle}
+        >
+          {t.usersTitle}
+        </h1>
 
         <div className="flex items-center gap-2">
-          <ThemeToggle />
+          <ThemeToggle title={t.toggleTheme} />
+
+          {isDemo && <LanguageToggle value={lang} onChange={setLang} />}
 
           <Button
             size="sm"
             className="px-10 font-bold"
             onClick={userModal.openCreate}
+            title={t.addUser}
           >
-            Add user
+            {t.addUser}
           </Button>
         </div>
       </div>
 
       {/* ================= STATS ================= */}
       {statics && <UsersStats statics={statics} />}
-      <UsersStatisticsCard />
+      <UsersStatisticsCard title={t.statistics} />
 
       {/* ================= ERROR ================= */}
       {error && <p className="text-sm text-[var(--danger)] mt-2">{error}</p>}
@@ -162,6 +160,7 @@ export default function UsersPage() {
               total={totalUsers}
               onPageChange={setPage}
               onPerPageChange={setPerPage}
+              t={t.pagination}
             />
           </div>
         </>
@@ -182,8 +181,14 @@ export default function UsersPage() {
       {/* ================= DELETE CONFIRM ================= */}
       <ConfirmModal
         open={confirmDelete.open}
-        title="Delete user"
-        description={`Are you sure you want to delete ${confirmDelete.payload?.name}?`}
+        title={t.deleteUserTitle}
+        description={
+          confirmDelete.payload
+            ? t.deleteUserConfirm(confirmDelete.payload.name)
+            : ""
+        }
+        confirmLabel={t.deleteUser}
+        cancelLabel={t.cancel}
         loading={deleting}
         onClose={confirmDelete.closeConfirm}
         onConfirm={handleDeleteConfirm}

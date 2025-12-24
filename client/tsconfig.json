@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2017",
+    "types": ["jest", "node"],
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -31,5 +32,6 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
+  
   "exclude": ["node_modules"]
 }

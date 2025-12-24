@@ -35,7 +35,7 @@ export default function UsersDonutChart() {
   const items: Item[] = data.distribution.map((d) => ({
     name: d.type,
     value: d.percentage,
-    color: COLORS[d.type] ?? "#5F5F5F",
+    color: COLORS[d.type],
   }));
 
   const rings = [
