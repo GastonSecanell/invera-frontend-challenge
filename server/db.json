@@ -1,13 +1,22 @@
 {
   "users": [
     {
+      "id": 1,
       "name": "John Doe",
       "email": "john@example.com",
-      "phone": "(123) 456-78902",
+      "phone": "(123) 456-7890",
       "location": "United States",
-      "company": "Google",
-      "status": "Offline",
-      "id": 1
+      "company": "Example Inc.",
+      "status": "Online"
+    },
+    {
+      "id": 2,
+      "name": "Jane Smith",
+      "email": "jane@example.com",
+      "phone": "(456) 789-0123",
+      "location": "Canada",
+      "company": "Example Inc.",
+      "status": "Offline"
     },
     {
       "id": 3,
@@ -16,6 +25,42 @@
       "phone": "(319) 098-9899",
       "location": "Australia",
       "company": "Facebook",
+      "status": "Offline"
+    },
+    {
+      "id": 4,
+      "name": "Graham Hills",
+      "email": "graham@twitter.com",
+      "phone": "(540) 827-3880",
+      "location": "India",
+      "company": "Twitter",
+      "status": "Online"
+    },
+    {
+      "id": 5,
+      "name": "Sandy Houston",
+      "email": "sandy@youtube.com",
+      "phone": "(440) 410-3848",
+      "location": "Canada",
+      "company": "YouTube",
+      "status": "Offline"
+    },
+    {
+      "id": 6,
+      "name": "Andy Smith",
+      "email": "andy@reddit.com",
+      "phone": "(424) 458-3268",
+      "location": "United States",
+      "company": "Reddit",
+      "status": "Online"
+    },
+    {
+      "id": 7,
+      "name": "Lilly Woods",
+      "email": "lilly@spotify.com",
+      "phone": "(361) 892-1819",
+      "location": "Australia",
+      "company": "Spotify",
       "status": "Offline"
     },
     {
@@ -404,42 +449,6 @@
       "location": "Egypt",
       "company": "Elsewedy",
       "status": "Offline"
-    },
-    {
-      "name": "Gaston Secanell",
-      "email": "gastonsecanell@gmail.com",
-      "phone": "03426496904",
-      "location": "Argentina",
-      "company": "Invera",
-      "status": "Online",
-      "id": 51
-    },
-    {
-      "name": "Otro nuevo",
-      "email": "gastonsecanell@gmail.com",
-      "phone": "03426496904",
-      "location": "Argentina",
-      "company": "GrupoMass",
-      "status": "Online",
-      "id": 52
-    },
-    {
-      "name": "Gaston ",
-      "email": "gastonsecanell@hotmail.com",
-      "phone": "5047172",
-      "location": "Arg",
-      "company": "Otra",
-      "status": "Offline",
-      "id": 53
-    },
-    {
-      "name": "Gaston Nicolas Secanell",
-      "email": "gastonsecanell@gmail.com",
-      "phone": "127365123",
-      "location": "Argentina",
-      "company": "Note",
-      "status": "Online",
-      "id": 54
     }
   ],
   "statics": {
