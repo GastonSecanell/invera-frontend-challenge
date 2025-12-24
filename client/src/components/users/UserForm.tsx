@@ -8,16 +8,19 @@ import { Button } from "@/components/ui/button";
 import { useUserFilters } from "@/hooks/useUserFilters";
 import type { UserStatus } from "@/types/user";
 import SelectBase from "@/components/ui/SelectBase";
+import { useI18n, Lang } from "@/i18n/useI18n";
 
 interface Props {
   initialData: User | null;
   onSubmit: (data: Omit<User, "id">) => void;
   submitLabel: string;
   loading?: boolean;
+  lang: Lang;
 }
 
 type FormData = Omit<User, "id">;
 type FormErrors = Partial<Record<keyof FormData, string>>;
+
 interface InputFieldProps {
   value: string;
   placeholder: string;
@@ -25,12 +28,7 @@ interface InputFieldProps {
   onChange: (value: string) => void;
 }
 
-function InputField({
-  value,
-  placeholder,
-  error,
-  onChange,
-}: InputFieldProps) {
+function InputField({ value, placeholder, error, onChange }: InputFieldProps) {
   return (
     <div className="flex flex-col gap-1">
       <input
@@ -58,7 +56,9 @@ export default function UserForm({
   onSubmit,
   submitLabel,
   loading = false,
+  lang,
 }: Props) {
+  const t = useI18n(lang);
   const { form, setForm, isDirty, isCreate } = useUserForm(initialData);
   const [errors, setErrors] = useState<FormErrors>({});
   const { statuses } = useUserFilters();
@@ -71,11 +71,11 @@ export default function UserForm({
   );
 
   const handleSubmit = useCallback(() => {
-    const { valid, errors } = validateUser(form);
+    const { valid, errors } = validateUser(form, t);
     setErrors(errors);
     if (!valid) return;
     onSubmit(form);
-  }, [form, onSubmit]);
+  }, [form, onSubmit, t]);
 
   return (
     <form
@@ -86,53 +86,45 @@ export default function UserForm({
         handleSubmit();
       }}
     >
-      {/* Name */}
       <InputField
         value={form.name}
-        placeholder="Name"
+        placeholder={t.form.name}
         error={errors.name}
         onChange={(v) => updateField("name", v)}
       />
 
-      {/* Email */}
       <InputField
         value={form.email}
-        placeholder="Email"
+        placeholder={t.form.email}
         error={errors.email}
         onChange={(v) => updateField("email", v)}
       />
 
-      {/* Phone */}
       <InputField
         value={form.phone}
-        placeholder="Phone"
+        placeholder={t.form.phone}
         error={errors.phone}
         onChange={(v) => updateField("phone", v)}
       />
 
-      {/* Location */}
       <InputField
         value={form.location}
-        placeholder="Location"
+        placeholder={t.form.location}
         error={errors.location}
         onChange={(v) => updateField("location", v)}
       />
 
-      {/* Company */}
       <InputField
         value={form.company}
-        placeholder="Company"
+        placeholder={t.form.company}
         error={errors.company}
         onChange={(v) => updateField("company", v)}
       />
 
-      {/* Status */}
       <div className="flex flex-col gap-1">
         <SelectBase
           value={form.status}
-          onChange={(e) =>
-            updateField("status", e.target.value as UserStatus)
-          }
+          onChange={(e) => updateField("status", e.target.value as UserStatus)}
           error={!!errors.status}
         >
           {statuses.map((status) => (
@@ -147,7 +139,6 @@ export default function UserForm({
         )}
       </div>
 
-      {/* Submit */}
       <div className="sm:col-span-2 pt-3">
         <Button
           type="submit"
@@ -163,7 +154,7 @@ export default function UserForm({
 
         {!isDirty && !isCreate && (
           <p className="mt-2 text-xs text-[var(--text-muted)] text-center">
-            No changes to save
+            {t.form.noChanges}
           </p>
         )}
       </div>

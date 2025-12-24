@@ -38,6 +38,21 @@ export type Translations = {
     rowsPerPage: string;
     of: string;
   };
+
+  form: {
+    name: string;
+    email: string;
+    phone: string;
+    location: string;
+    company: string;
+    status: string;
+    noChanges: string;
+  };
+
+  formErrors: {
+    required: string;
+    invalidEmail: string;
+  };
 };
 
 export const messages: Record<Lang, Translations> = {
@@ -87,6 +102,21 @@ export const messages: Record<Lang, Translations> = {
       rowsPerPage: "Rows per page:",
       of: "of",
     },
+
+    form: {
+      name: "Name",
+      email: "Email",
+      phone: "Phone",
+      location: "Location",
+      company: "Company",
+      status: "Status",
+      noChanges: "No changes to save",
+    },
+
+    formErrors: {
+      required: "This field is required",
+      invalidEmail: "Invalid email format",
+    },
   },
 
   es: {
@@ -134,6 +164,21 @@ export const messages: Record<Lang, Translations> = {
     pagination: {
       rowsPerPage: "Filas por página:",
       of: "de",
+    },
+
+    form: {
+      name: "Nombre",
+      email: "Email",
+      phone: "Teléfono",
+      location: "Ubicación",
+      company: "Empresa",
+      status: "Estado",
+      noChanges: "No hay cambios para guardar",
+    },
+
+    formErrors: {
+      required: "Este campo es obligatorio",
+      invalidEmail: "Formato de email inválido",
     },
   },
 };

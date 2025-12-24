@@ -18,7 +18,6 @@ export default function Modal({
   onClose,
   size = "xl",
 }: Props) {
-  // Cerrar con ESC
   useEffect(() => {
     if (!open || !onClose) return;
 

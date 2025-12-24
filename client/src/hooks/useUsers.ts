@@ -8,7 +8,6 @@ type SortDir = "asc" | "desc";
 type SortKey = keyof User;
 
 export function useUsers() {
-  /* ================= STATE ================= */
   const [users, setUsers] = useState<User[]>([]);
 
   const [page, setPage] = useState(1);
@@ -33,7 +32,6 @@ export function useUsers() {
 
   const isFirstLoad = useRef(true);
 
-  /* ================= TOTAL COUNT ================= */
   useEffect(() => {
     const timeout = setTimeout(() => {
       fetchUsersTotal({
@@ -50,7 +48,6 @@ export function useUsers() {
     return () => clearTimeout(timeout);
   }, [q, filters]);
 
-  /* ================= LOAD USERS ================= */
   const loadUsers = async (mode: "auto" | "manual" = "auto") => {
     const isTableInteraction =
       mode === "manual" ? true : !isFirstLoad.current;
@@ -83,7 +80,6 @@ export function useUsers() {
     }
   };
 
-  /* ================= AUTO FETCH ================= */
   useEffect(() => {
     const timeout = setTimeout(() => {
       loadUsers("auto");
@@ -92,19 +88,16 @@ export function useUsers() {
     return () => clearTimeout(timeout);
   }, [page, perPage, q, filters, sortKey, sortDir]);
 
-  /* ================= RESET PAGE ================= */
   useEffect(() => {
     setPage(1);
   }, [q, filters]);
 
-  /* ================= SORT ================= */
   const onSortChange = (key: SortKey) => {
     setPage(1);
     setSortKey(key);
     setSortDir((prev) => (prev === "asc" ? "desc" : "asc"));
   };
 
-  /* ================= RESET FILTERS ================= */
   const resetFilters = () => {
     setQ("");
     setFilters({ name: "", company: "", status: undefined });
@@ -113,7 +106,6 @@ export function useUsers() {
     setPage(1);
   };
 
-  /* ================= PUBLIC API ================= */
   return {
     users,
     page,

@@ -6,8 +6,6 @@ import {
   FetchUsersParams,
 } from "@/types/user";
 
-/* ================= USERS ================= */
-
 export function fetchUsers(params?: FetchUsersParams) {
   const query = new URLSearchParams();
 
@@ -67,19 +65,13 @@ export function deleteUser(id: number) {
   });
 }
 
-/* ================= STATICS ================= */
-
 export function fetchStatics() {
   return apiFetch<UserStatics>("/statics");
 }
 
-/* ================= USER TYPES (CHART) ================= */
-
 export function fetchUserTypes() {
   return apiFetch<UserTypesResponse>("/userTypes");
 }
-
-/* ================= FILTER OPTIONS ================= */
 
 export async function fetchUserFilters(): Promise<{
   companies: string[];
@@ -89,11 +81,12 @@ export async function fetchUserFilters(): Promise<{
 
   const companies = Array.from(
     new Set(users.map((u) => u.company).filter(Boolean))
-  );
+  ).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
 
   const statuses = Array.from(
     new Set(users.map((u) => u.status).filter(Boolean))
-  );
+  ).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
 
   return { companies, statuses };
 }
+

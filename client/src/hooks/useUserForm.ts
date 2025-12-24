@@ -1,29 +1,26 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { User } from "@/types/user";
+import type { User, UserPayload, UserStatus } from "@/types/user";
 
-type UserFormData = Omit<User, "id">;
-
-function deepEqual(a: any, b: any) {
+function deepEqual<T>(a: T, b: T) {
   return JSON.stringify(a) === JSON.stringify(b);
 }
 
 export function useUserForm(initialData: User | null) {
   const isCreate = !initialData;
 
-
-  const emptyForm: UserFormData = {
+  const emptyForm: UserPayload = {
     name: "",
     email: "",
     phone: "",
     location: "",
     company: "",
-    status: "Offline",
+    status: "Offline" as UserStatus,
   };
 
-  const [initialForm, setInitialForm] = useState<UserFormData>(emptyForm);
-  const [form, setForm] = useState<UserFormData>(emptyForm);
+  const [initialForm, setInitialForm] = useState<UserPayload>(emptyForm);
+  const [form, setForm] = useState<UserPayload>(emptyForm);
 
   useEffect(() => {
     if (initialData) {
@@ -48,4 +45,3 @@ export function useUserForm(initialData: User | null) {
     isCreate,
   };
 }
-
